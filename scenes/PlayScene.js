@@ -21,6 +21,13 @@ export default class PlayScene extends Phaser.Scene {
     this.scoreText = this.add
       .bitmapText(width - 80, 20, "arcade", `Score: 0000`, 24)
       .setOrigin(0.5);
+    this.levelText = this.add.bitmapText(
+      20,
+      20,
+      "arcade",
+      `Level: ${this.spawnState.toString()}`,
+      24
+    );
 
     // Player
     this.player = this.physics.add.image(200, 200, "player");
@@ -154,6 +161,7 @@ export default class PlayScene extends Phaser.Scene {
     }
 
     this.scoreText.setText(`Score: ${this.score}`);
+    this.levelText.setText(`Level: ${this.spawnState.toString()}`);
 
     this.checkSpawnState();
   }
