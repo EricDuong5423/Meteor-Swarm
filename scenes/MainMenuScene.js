@@ -16,7 +16,7 @@ export default class MainMenuScene extends Phaser.Scene {
   }
   update() {
     if (this.cursor.space.isDown) {
-      this.scene.switch("play-scene");
+      this.scene.start("loading-scene", { nameNextScene: "play-scene" });
     }
   }
 }

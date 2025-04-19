@@ -3,6 +3,8 @@ import LoaderScene from "../scenes/LoaderScene";
 import MainMenuScene from "../scenes/MainMenuScene";
 import PlayScene from "../scenes/PlayScene";
 import GameOverScene from "../scenes/GameOverScene";
+import LoadingScene from "../scenes/LoadingScene";
+import VictoryScene from "../scenes/VictoryScene";
 
 const config = {
   type: Phaser.AUTO,
@@ -15,7 +17,14 @@ const config = {
       debug: false,
     },
   },
-  scene: [LoaderScene, MainMenuScene, PlayScene, GameOverScene],
+  scene: [
+    LoaderScene,
+    MainMenuScene,
+    LoadingScene,
+    PlayScene,
+    GameOverScene,
+    VictoryScene,
+  ],
 };
 
 const game = new Phaser.Game(config);

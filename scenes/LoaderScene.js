@@ -20,8 +20,10 @@ export default class LoaderScene extends Phaser.Scene {
     //Load audio
     this.load.audio("shoot", "./assets/laser-shoot.wav");
     this.load.audio("explosion", "./assets/laser-explosion.wav");
+    this.load.audio("death", "./assets/death-sound.wav");
+    this.load.audio("hit", "./assets/hit-sound.wav");
   }
   create() {
-    this.scene.switch("main-menu-screen");
+    this.scene.start("main-menu-screen");
   }
 }

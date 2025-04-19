@@ -2,7 +2,7 @@ import Phaser from "phaser";
 
 export default class VictoryScene extends Phaser.Scene {
   constructor() {
-    super("victory-screen");
+    super("victory-scene");
   }
   preload() {}
   create() {

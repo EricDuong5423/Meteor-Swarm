@@ -6,18 +6,19 @@ import EnemySpawnState from "../Stage/EnemySpawnState.js";
 export default class PlayScene extends Phaser.Scene {
   constructor() {
     super("play-scene");
+    this.lastHit = 0;
+    this.hitTime = 0;
+    this.score = 0;
+    this.waitFlag = false;
 
     this.spawnState = EnemySpawnState.BEGINNER;
   }
 
   create() {
-    this.lastHit = 0;
-    this.hitTime = 0;
+    this.waitFlag = false;
     const width = this.cameras.main.width;
     const height = this.cameras.main.height;
-
     // Score
-    this.score = 0;
     this.scoreText = this.add
       .bitmapText(width - 80, 20, "arcade", `Score: 0000`, 24)
       .setOrigin(0.5);
@@ -82,13 +83,17 @@ export default class PlayScene extends Phaser.Scene {
       this.meteorGroup,
       (player, meteor) => {
         meteor.destroy();
+        this.sound.play("hit");
         this.score -= 10;
         const currentTime = this.time.now;
         if (currentTime - this.lastHit > 3000) {
           this.hitTime += 1;
           this.lastHit = currentTime;
           if (this.hitTime >= 2) {
-            this.scene.switch("game-over-screen");
+            this.sound.play("death");
+            this.scene.start("loading-scene", {
+              nameNextScene: "game-over-screen",
+            });
           }
         }
       },
@@ -167,39 +172,65 @@ export default class PlayScene extends Phaser.Scene {
   }
 
   checkSpawnState() {
+    if (this.waitFlag == true) return;
     if (
       this.meteorGroup.countActive() == 0 &&
       this.spawnState === EnemySpawnState.BEGINNER
     ) {
+      this.waitFlag = true;
       this.spawnState = EnemySpawnState.INTERMEDIATE;
-      console.log(">> Đổi state: INTERMEDIATE");
-      this.resetMeteors();
+      this.showLevelUpText();
+      this.time.delayedCall(2000, () => {
+        this.scene.restart();
+      });
     } else if (
       this.meteorGroup.countActive() == 0 &&
       this.spawnState === EnemySpawnState.INTERMEDIATE
     ) {
+      this.waitFlag = true;
       this.spawnState = EnemySpawnState.ADVANCED;
-      console.log(">> Đổi state: ADVANCED");
-      this.resetMeteors();
+      this.showLevelUpText();
+      this.time.delayedCall(2000, () => {
+        this.scene.restart();
+      });
     } else if (
       this.meteorGroup.countActive() == 0 &&
       this.spawnState === EnemySpawnState.ADVANCED
     ) {
+      this.waitFlag = true;
       this.spawnState = EnemySpawnState.MASTER;
-      console.log(">> Đổi state: ADVANCED");
-      this.resetMeteors();
+      this.showLevelUpText();
+      this.time.delayedCall(2000, () => {
+        this.scene.restart();
+      });
     } else if (
       this.meteorGroup.countActive() == 0 &&
       this.spawnState === EnemySpawnState.MASTER
     ) {
-      this.scene.switch("victory-screen");
+      this.scene.start("loading-scene", { nameNextScene: "victory-scene" });
     }
   }
+  showLevelUpText() {
+    const announceText = this.add
+      .bitmapText(
+        this.cameras.main.width / 2,
+        300,
+        "arcade",
+        `Level: ${this.spawnState}`,
+        40
+      )
+      .setOrigin(0.5)
+      .setAlpha(1);
 
-  resetMeteors() {
-    this.meteorGroup.clear(true, true);
-    this.meteorArray = [];
-    this.spawnMeteors(this.cameras.main.width, this.cameras.main.height);
-    this.setupCollisions();
+    this.tweens.add({
+      targets: announceText,
+      y: 250,
+      alpha: 0,
+      duration: 2000,
+      ease: "Power2",
+      onComplete: () => {
+        announceText.destroy();
+      },
+    });
   }
 }
